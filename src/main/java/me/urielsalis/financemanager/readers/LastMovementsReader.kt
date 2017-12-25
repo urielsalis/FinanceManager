@@ -1,5 +1,6 @@
 package me.urielsalis.financemanager.readers
 
+import com.googlecode.lanterna.gui2.table.Table
 import org.javamoney.moneta.Money
 import java.math.BigDecimal
 
@@ -91,7 +92,7 @@ class LastMovementsReader: PDFReader<LastMovements>() {
         val movimientos = mutableListOf<Movement>()
         for(line in data.data) {
             val split = line.split(";")
-            var amount = split[1].trim()
+            val amount = split[1].trim()
                     .replace(".", "")
                     .replace(",", ".");
             movimientos.add(Movement(split[3],
@@ -112,5 +113,16 @@ class LastMovementsReader: PDFReader<LastMovements>() {
 
 }
 
-data class LastMovements(val accountName: String, val accountFinalBalance: Money, val movements: List<Movement>)
+data class LastMovements(val accountName: String, val accountFinalBalance: Money, val movements: List<Movement>): ReaderData {
+    override fun generateTable(): ReaderData.TableData {
+        val extra = mapOf(Pair("Nombre", accountName), Pair("Balance", accountFinalBalance.toString()))
+        val table = Table<String>("Fecha", "Operacion", "Nombre", "Balance")
+        for(movement in movements) {
+            table.tableModel.addRow(movement.date, movement.operation, movement.name, movement.amount.toString())
+        }
+        return ReaderData.TableData(table, extra)
+    }
+
+}
+
 data class Movement(val name: String, val amount: Money, val operation: String, val date: String)

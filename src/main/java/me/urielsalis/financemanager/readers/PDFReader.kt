@@ -1,5 +1,6 @@
 package me.urielsalis.financemanager.readers
 
+import com.googlecode.lanterna.gui2.table.Table
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 import java.io.File
@@ -14,19 +15,28 @@ abstract class PDFReader<T> {
     abstract protected fun writeData(data: PreProcessedData<T>): T
     abstract protected fun preProcessData(text: String): PreProcessedData<T>
 
-    fun readPDF(file: String): T {
+    fun readPDF(file: File): T {
         readers.pdfStripper.sortByPosition = true
-        logger.info("Loading $file")
-        val document = PDDocument.load(File(file))
-        logger.info("Loaded $file")
+        val name = file.name
+        logger.info("Loading $name")
+        val document = PDDocument.load(file)
+        logger.info("Loaded $name")
         val text = readers.pdfStripper.getText(document)
-        logger.info("Reading data from $file: ")
+        logger.info("Reading data from $name: ")
         val returnValue = writeData(preProcessData(text))
-        logger.info("Closing $file")
+        logger.info("Closing $name")
         document.close()
         return returnValue
     }
 
+    fun readPDF(file: String): T {
+        return readPDF(File(file))
+    }
+
+}
+interface ReaderData {
+    abstract fun generateTable(): TableData
+    data class TableData(val table: Table<String>, val extra: Map<String, String>)
 }
 
 data class PreProcessedData<T>(var header: Map<String, String>, var data: List<String>)

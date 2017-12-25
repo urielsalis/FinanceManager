@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="jexer-0.0.5">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/jexer-0.0.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/jexer-0.0.5.jar!/" />
+    </SOURCES>
+  </library>
+</component>
